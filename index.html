@@ -17,7 +17,7 @@
     --digit2:var(--prime-light);
     --digit-color:var(--prime-light);
     --title-color:var(--prime-light);
-    --sep-color:var(--prime-dark); /* boja separatora */
+    --sep-color:var(--prime-dark);
 
     /* Dimenzije i tipografija */
     --digit-size: clamp(96px, 20vw, 340px);
@@ -30,15 +30,27 @@
     --panel-height: min(56vh, 560px);
 
     /* Pozadinska slika – kontrole */
-    --bg-opacity: 0.18;  /* 0–1 */
-    --bg-blur: 0px;      /* px */
-    --bg-bright: 1;      /* 0–2 */
-    --bg-sat: 1;         /* 0–2 */
-    --bg-scale: 1;       /* 0.5–2 */
+    --bg-opacity: 0.18;
+    --bg-blur: 0px;
+    --bg-bright: 1;
+    --bg-sat: 1;
+    --bg-scale: 1;
 
     /* Neon / Outline */
     --neon-color:#7dd3fc;
     --outline-color:#ffffff;
+
+    /* Sponsor rail (TOP) */
+    --rail-h: 90px;           /* visina trake na vrhu */
+    --rail-gap: 34px;         /* razmak između logotipa */
+    --rail-speed: 70s;        /* sporija animacija */
+    --rail-logo-h: 68px;      /* visina PNG logotipova u railu */
+
+    /* Fiksni logo = 4× veći od rail logotipa */
+    --fix-h: calc(var(--rail-logo-h) * 4);
+
+    /* Offset sadržaja ispod rail-a i fiksnog loga */
+    --content-offset: calc(var(--rail-h) + var(--fix-h) + 22px);
   }
 
   *{box-sizing:border-box}
@@ -46,6 +58,7 @@
   body{
     margin:0; font-family:var(--font); color:var(--prime-light); background:var(--bg);
     display:flex; flex-direction:column; align-items:center; justify-content:center; overflow:hidden;
+    padding-top: var(--content-offset);
   }
 
   /* Pozadinska slika */
@@ -64,7 +77,7 @@
 
   .content-root{ position:relative; z-index:1; width:100% }
 
-  /* Logo + natpis (podignuto iznad timera) */
+  /* Logo + natpis */
   .top{
     display:flex; flex-direction:column; align-items:center; gap:.5rem; text-align:center;
     padding:1rem .8rem 0; margin-bottom: clamp(12px, 5vh, 64px);
@@ -130,10 +143,11 @@
       0 0 32px color-mix(in srgb, var(--neon-color) 40%, transparent);
   }
 
-  /* Toggle dugme */
+  /* Toggle dugme (kod dna ekrana) */
   .toggle{
     position:fixed; left:50%; transform:translateX(-50%);
-    bottom:max(16px, env(safe-area-inset-bottom)); z-index:30;
+    bottom:max(16px, env(safe-area-inset-bottom));
+    z-index:30;
     border:none; cursor:pointer; padding:.7rem 1.1rem; border-radius:999px;
     background:#0f172acc; color:#fff; font-weight:800;
     transition:opacity .25s ease, transform .25s ease; opacity:1;
@@ -192,8 +206,52 @@
   }
   .btn-close-panel:hover{ background:#243041 }
 
+  /* ===== TOP SPONSOR RAIL ===== */
+  .sponsor-rail{
+    position:fixed; left:0; right:0; top:0; height:var(--rail-h);
+    background: transparent;
+    z-index:20; overflow:hidden; pointer-events:auto;
+  }
+  .sponsor-rail .track{
+    position:absolute; top:50%; transform:translateY(-50%);
+    display:flex; align-items:center; gap:var(--rail-gap);
+    animation: rail-move var(--rail-speed) linear infinite;
+    will-change: transform;
+    padding-left: calc(100vw + var(--rail-gap));
+  }
+  .sponsor-rail:hover .track{ animation-play-state: paused }
+  .sponsor-rail .logo{
+    height:var(--rail-logo-h); width:auto; object-fit:contain; opacity:.95;
+    image-rendering:auto;
+    filter: drop-shadow(0 2px 6px rgba(0,0,0,.35));
+    transition: opacity .2s ease, transform .2s ease;
+  }
+  .sponsor-rail .logo:hover{ opacity:1; transform: translateY(-1px) }
+
+  @keyframes rail-move{
+    from{ transform: translate3d(0, -50%, 0) }
+    to  { transform: translate3d(-100%, -50%, 0) }
+  }
+
+  /* ===== Fiksni logo (4× veći) ispod rail-a ===== */
+  .sponsor-fixed{
+    position:fixed; left:0; right:0; top:var(--rail-h);
+    display:flex; align-items:center; justify-content:center;
+    z-index:19; pointer-events:none;
+  }
+  .sponsor-fixed img{
+    height:var(--fix-h); object-fit:contain; opacity:.98;
+    filter: drop-shadow(0 2px 8px rgba(0,0,0,.35));
+  }
+
   @media (max-width:860px){
-    :root{ --digit-size: clamp(76px, 23vw, 300px) }
+    :root{
+      --digit-size: clamp(76px, 23vw, 300px);
+      --rail-h: 80px;
+      --rail-logo-h: 56px;
+      --fix-h: calc(var(--rail-logo-h) * 4); /* zadrži 4× i na mobitelu */
+      --content-offset: calc(var(--rail-h) + var(--fix-h) + 18px);
+    }
     .grid{ grid-template-columns: repeat(2, minmax(0,1fr)) }
     .sep{ width:.46em }
   }
@@ -203,6 +261,52 @@
 
   <!-- POZADINSKA SLIKA -->
   <div class="bg" aria-hidden="true"><img id="bgImg" alt=""></div>
+
+  <!-- TOP: slider (16 png logotipova, dupliran set za neprekidan loop) -->
+  <div class="sponsor-rail" aria-label="Sponzori">
+    <div class="track">
+      <!-- 1x set -->
+      <img class="logo" src="logo1.png"  alt="logo1"/>
+      <img class="logo" src="logo2.png"  alt="logo2"/>
+      <img class="logo" src="logo3.png"  alt="logo3"/>
+      <img class="logo" src="logo4.png"  alt="logo4"/>
+      <img class="logo" src="logo5.png"  alt="logo5"/>
+      <img class="logo" src="logo6.png"  alt="logo6"/>
+      <img class="logo" src="logo7.png"  alt="logo7"/>
+      <img class="logo" src="logo8.png"  alt="logo8"/>
+      <img class="logo" src="logo9.png"  alt="logo9"/>
+      <img class="logo" src="logo10.png" alt="logo10"/>
+      <img class="logo" src="logo11.png" alt="logo11"/>
+      <img class="logo" src="logo12.png" alt="logo12"/>
+      <img class="logo" src="logo13.png" alt="logo13"/>
+      <img class="logo" src="logo14.png" alt="logo14"/>
+      <img class="logo" src="logo15.png" alt="logo15"/>
+      <img class="logo" src="logo16.png" alt="logo16"/>
+
+      <!-- 2x set (duplikat radi glatkog loopa) -->
+      <img class="logo" src="logo1.png"  alt="logo1"/>
+      <img class="logo" src="logo2.png"  alt="logo2"/>
+      <img class="logo" src="logo3.png"  alt="logo3"/>
+      <img class="logo" src="logo4.png"  alt="logo4"/>
+      <img class="logo" src="logo5.png"  alt="logo5"/>
+      <img class="logo" src="logo6.png"  alt="logo6"/>
+      <img class="logo" src="logo7.png"  alt="logo7"/>
+      <img class="logo" src="logo8.png"  alt="logo8"/>
+      <img class="logo" src="logo9.png"  alt="logo9"/>
+      <img class="logo" src="logo10.png" alt="logo10"/>
+      <img class="logo" src="logo11.png" alt="logo11"/>
+      <img class="logo" src="logo12.png" alt="logo12"/>
+      <img class="logo" src="logo13.png" alt="logo13"/>
+      <img class="logo" src="logo14.png" alt="logo14"/>
+      <img class="logo" src="logo15.png" alt="logo15"/>
+      <img class="logo" src="logo16.png" alt="logo16"/>
+    </div>
+  </div>
+
+  <!-- Fiksni logo (4×) odmah ispod rail-a -->
+  <div class="sponsor-fixed">
+    <img src="logofix.png" alt="Fiksni partner">
+  </div>
 
   <!-- Glavni sadržaj -->
   <div class="content-root">
@@ -365,6 +469,9 @@
     </div>
   </div>
 
+  <!-- Blackout sloj -->
+  <div class="blackout" id="blackout"></div>
+
 <script>
 /* ====== KONFIG ====== */
 const PANEL_PASSWORD = 'sifra123';
@@ -473,7 +580,7 @@ function togglePanel(forceOpen){
   panel.setAttribute('aria-hidden', String(!targetOpen));
   toggleBtn.textContent = targetOpen?'▾ Sakrij kontrole':'▴ Kontrole';
   toggleBtn.setAttribute('aria-expanded', targetOpen?'true':'false');
-  scheduleHide(); // uvijek osvježi status dugmeta nakon promjene
+  scheduleHide();
 }
 toggleBtn.addEventListener('click', ()=> togglePanel());
 btnClosePanel.addEventListener('click', ()=> togglePanel(false));
@@ -524,7 +631,6 @@ function applyBgFilters(){
 [inBgOpacity,inBgBlur,inBgBright,inBgSat,inBgScale].forEach(el=>el.addEventListener('input', applyBgFilters));
 
 /* ====== TASTATURA ====== */
-/* Kad je modal otvoren – prepuštamo njegove tipke */
 function isPanelOpen(){ return panel.classList.contains('open'); }
 function isModalOpen(){ return pwdModal.classList.contains('show'); }
 function toggleRun(){ running?pause():start(); }
@@ -532,16 +638,13 @@ function toggleRun(){ running?pause():start(); }
 window.addEventListener('keydown', (e)=>{
   const k = e.key.toLowerCase();
 
-  // Modal: dozvoli njegove vlastite handler-e (Enter/Esc)
   if (isModalOpen()) return;
 
-  // Ako je panel otvoren: dozvoli samo ESC da ga zatvori
   if (isPanelOpen()){
     if (k === 'escape'){ e.preventDefault(); togglePanel(false); }
     return;
   }
 
-  // Normalne prečice kada je panel zatvoren
   if ([' ','enter','arrowright','pagedown'].includes(k) || e.code==='Space'){ e.preventDefault(); toggleRun(); return; }
   if (['arrowleft','pageup','r'].includes(k)){ e.preventDefault(); reset(); return; }
   if (k==='f'){ e.preventDefault(); btnFS.click(); return; }
@@ -552,7 +655,6 @@ window.addEventListener('keydown', (e)=>{
 /* ====== AUTO-HIDE TOGGLE ====== */
 let hideTimer=null;
 function scheduleHide(){
-  // Dok je panel otvoren – toggle uvijek vidljiv
   if (isPanelOpen()){
     toggleBtn.classList.remove('hidden');
     return;
@@ -621,7 +723,6 @@ function init(){
   if(!inEnd.value)  inEnd.value='kraj.mp3';
   loadAudio();
   scheduleHide();
-  // bgImg.src = 'background.jpg'; // po želji default
 }
 init();
 </script>
