@@ -12,12 +12,12 @@
     --prime-light:#e2e2e7;
     --prime-dark:#98a1ad;
 
-    /* Boje cifara (različite za stilove) */
+    /* Boje cifara */
     --digit1:var(--prime-light);
     --digit2:var(--prime-light);
-    --digit-color:var(--prime-light);     /* 7seg/Flip/Neon/Outline osnovna */
+    --digit-color:var(--prime-light);
     --title-color:var(--prime-light);
-    --sep-color:var(--prime-dark);        /* NOVO: boja separatora */
+    --sep-color:var(--prime-dark); /* boja separatora */
 
     /* Dimenzije i tipografija */
     --digit-size: clamp(96px, 20vw, 340px);
@@ -30,15 +30,15 @@
     --panel-height: min(56vh, 560px);
 
     /* Pozadinska slika – kontrole */
-    --bg-opacity: 0.18;       /* 0–1 */
-    --bg-blur: 0px;           /* px */
-    --bg-bright: 1;           /* 0–2 */
-    --bg-sat: 1;              /* 0–2 */
-    --bg-scale: 1;            /* 0.5–2 */
+    --bg-opacity: 0.18;  /* 0–1 */
+    --bg-blur: 0px;      /* px */
+    --bg-bright: 1;      /* 0–2 */
+    --bg-sat: 1;         /* 0–2 */
+    --bg-scale: 1;       /* 0.5–2 */
 
-    /* Neon / Outline specifično */
-    --neon-color:#7dd3fc;     /* plava */
-    --outline-color:#ffffff;  /* obris */
+    /* Neon / Outline */
+    --neon-color:#7dd3fc;
+    --outline-color:#ffffff;
   }
 
   *{box-sizing:border-box}
@@ -48,7 +48,7 @@
     display:flex; flex-direction:column; align-items:center; justify-content:center; overflow:hidden;
   }
 
-  /* Pozadinska slika sloj (ispod svega) */
+  /* Pozadinska slika */
   .bg{
     position:fixed; inset:0; z-index:0; pointer-events:none;
     display:block; overflow:hidden;
@@ -62,9 +62,9 @@
     object-fit:cover;
   }
 
-  /* Sadržaj je iznad background-a */
   .content-root{ position:relative; z-index:1; width:100% }
 
+  /* Logo + natpis (podignuto iznad timera) */
   .top{
     display:flex; flex-direction:column; align-items:center; gap:.5rem; text-align:center;
     padding:1rem .8rem 0; margin-bottom: clamp(12px, 5vh, 64px);
@@ -75,13 +75,14 @@
     font-size: clamp(16px, 2.4vw, 32px); color:var(--title-color)
   }
 
+  /* Timer */
   .timer{
     display:flex; align-items:end; justify-content:center; gap:var(--sep-gap);
     line-height:1; user-select:none; padding:.2rem 1rem 1.2rem;
   }
   .sep{
     width:.6em; text-align:center; font-weight:900; font-size: calc(var(--digit-size)*0.9);
-    color:var(--sep-color);             /* NOVO: separator koristi var */
+    color:var(--sep-color);
   }
   .blink{animation:blink 1s steps(1,end) infinite}
   @keyframes blink{50%{opacity:.2}}
@@ -110,7 +111,7 @@
   .theme-flip .flip{animation:flip .6s ease-in-out; transform-origin:center top}
   @keyframes flip{0%{transform:rotateX(0)}100%{transform:rotateX(-180deg)}}
 
-  /* ------- THEME: OUTLINE (NOVO) ------- */
+  /* ------- THEME: OUTLINE ------- */
   .theme-outline .digit, .theme-outline .sep{
     font-variant-numeric:tabular-nums; font-weight:900; font-size:var(--digit-size);
     letter-spacing:.02em; transform:scaleY(1.15);
@@ -118,7 +119,7 @@
     text-shadow:none;
   }
 
-  /* ------- THEME: NEON (NOVO) ------- */
+  /* ------- THEME: NEON ------- */
   .theme-neon .digit, .theme-neon .sep{
     font-variant-numeric:tabular-nums; font-weight:900; font-size:var(--digit-size);
     letter-spacing:.02em; transform:scaleY(1.08);
@@ -182,6 +183,15 @@
   .box .roww{display:flex; gap:10px}
   .box input{flex:1}
 
+  /* Panel header (zatvori dugme) */
+  .panel-header{display:flex; align-items:center; gap:10px; margin-bottom:12px}
+  .panel-header h4{margin:0; font-size:1rem; opacity:.9}
+  .btn-close-panel{
+    margin-left:auto; padding:.55rem .9rem; border-radius:10px; border:1px solid rgba(255,255,255,.12);
+    background:#1f2937; color:#fff; font-weight:800; cursor:pointer
+  }
+  .btn-close-panel:hover{ background:#243041 }
+
   @media (max-width:860px){
     :root{ --digit-size: clamp(76px, 23vw, 300px) }
     .grid{ grid-template-columns: repeat(2, minmax(0,1fr)) }
@@ -215,8 +225,12 @@
   <!-- KONTROLNA PLOČA -->
   <div class="panel" id="panel" aria-hidden="true">
     <div class="content">
-      <div class="grid">
+      <div class="panel-header">
+        <h4>Kontrolna ploča</h4>
+        <button id="btnClosePanel" class="btn-close-panel">✕ Zatvori (Esc)</button>
+      </div>
 
+      <div class="grid">
         <!-- Naslov i preseti -->
         <div class="row">
           <div style="flex:1">
@@ -267,7 +281,7 @@
         <div><label>Boja naslova</label><input id="inTitleColor" type="text" value="#e2e2e7"/></div>
         <div><label>Pick naslova</label><input id="pickTitleColor" type="color" value="#e2e2e7"/></div>
 
-        <div><label>Boja separatora (NOVO)</label><input id="inSepColor" type="text" value="#98a1ad"/></div>
+        <div><label>Boja separatora</label><input id="inSepColor" type="text" value="#98a1ad"/></div>
         <div><label>Pick separatora</label><input id="pickSepColor" type="color" value="#98a1ad"/></div>
 
         <div><label>Neon boja (za Neon stil)</label><input id="inNeonColor" type="text" value="#7dd3fc"/></div>
@@ -377,6 +391,7 @@ const btnTest5=$('btnTest5'), btnTest1=$('btnTest1'), btnTestEnd=$('btnTestEnd')
 const inBgUrl=$('inBgUrl'), pickBgFile=$('pickBgFile');
 const inBgOpacity=$('inBgOpacity'), inBgBlur=$('inBgBlur'), inBgBright=$('inBgBright'), inBgSat=$('inBgSat'), inBgScale=$('inBgScale');
 const pwdModal=$('pwdModal'), pwdInput=$('pwdInput'), pwdOk=$('pwdOk'), pwdCancel=$('pwdCancel'), pwdMsg=$('pwdMsg');
+const btnClosePanel=$('btnClosePanel');
 
 /* ====== STANJE ====== */
 let durationMs=(10*60)*1000, endAt=null, running=false, raf=null;
@@ -445,11 +460,11 @@ function applyTheme(){
 
 /* ====== PANEL + AUTENTIFIKACIJA ====== */
 function hasAuth(){ return sessionStorage.getItem(SESSION_KEY)==='1'; }
-function openPwdModal(){ $('pwdMsg').style.display='none'; $('pwdInput').value=''; $('pwdModal').classList.add('show'); $('pwdInput').focus(); }
-function closePwdModal(){ $('pwdModal').classList.remove('show'); }
-$('pwdOk').addEventListener('click', ()=>{ if($('pwdInput').value===PANEL_PASSWORD){ sessionStorage.setItem(SESSION_KEY,'1'); closePwdModal(); togglePanel(true); } else { $('pwdMsg').style.display='block'; $('pwdInput').focus(); }});
-$('pwdCancel').addEventListener('click', ()=> closePwdModal());
-$('pwdInput').addEventListener('keydown', (e)=>{ if(e.key==='Enter') $('pwdOk').click(); if(e.key==='Escape') closePwdModal(); });
+function openPwdModal(){ pwdMsg.style.display='none'; pwdInput.value=''; pwdModal.classList.add('show'); pwdInput.focus(); }
+function closePwdModal(){ pwdModal.classList.remove('show'); }
+pwdOk.addEventListener('click', ()=>{ if(pwdInput.value===PANEL_PASSWORD){ sessionStorage.setItem(SESSION_KEY,'1'); closePwdModal(); togglePanel(true); } else { pwdMsg.style.display='block'; pwdInput.focus(); }});
+pwdCancel.addEventListener('click', ()=> closePwdModal());
+pwdInput.addEventListener('keydown', (e)=>{ if(e.key==='Enter') pwdOk.click(); if(e.key==='Escape') closePwdModal(); });
 
 function togglePanel(forceOpen){
   const targetOpen = forceOpen!==undefined ? !!forceOpen : !panel.classList.contains('open');
@@ -458,17 +473,19 @@ function togglePanel(forceOpen){
   panel.setAttribute('aria-hidden', String(!targetOpen));
   toggleBtn.textContent = targetOpen?'▾ Sakrij kontrole':'▴ Kontrole';
   toggleBtn.setAttribute('aria-expanded', targetOpen?'true':'false');
+  scheduleHide(); // uvijek osvježi status dugmeta nakon promjene
 }
 toggleBtn.addEventListener('click', ()=> togglePanel());
+btnClosePanel.addEventListener('click', ()=> togglePanel(false));
 
 /* ====== PRESETS / DUGMAD ====== */
 document.querySelectorAll('[data-preset]').forEach(b=>b.addEventListener('click',()=>{ inMin.value=parseInt(b.dataset.preset,10)||0; inSec.value=0; reset(); }));
-$('btnApply').addEventListener('click', ()=>{ if(inTitle.value.trim()) titleText.textContent=inTitle.value.trim(); applyTheme(); reset(); loadAudio(); saveSettings(); });
-$('btnStart').addEventListener('click', ()=>{ const mm=parseInt(m1.textContent+m2.textContent,10); const ss=parseInt(s1.textContent+s2.textContent,10); durationMs=(mm*60+ss)*1000; alerted5=alerted1=ended=false; start(); });
-$('btnPause').addEventListener('click', pause);
-$('btnReset').addEventListener('click', reset);
-$('btnFS').addEventListener('click', ()=>{ if(!document.fullscreenElement) document.documentElement.requestFullscreen().catch(()=>{}); else document.exitFullscreen().catch(()=>{}) });
-$('btnBlack').addEventListener('click', ()=> blackout.classList.toggle('show'));
+btnApply.addEventListener('click', ()=>{ if(inTitle.value.trim()) titleText.textContent=inTitle.value.trim(); applyTheme(); reset(); loadAudio(); saveSettings(); });
+btnStart.addEventListener('click', ()=>{ const mm=parseInt(m1.textContent+m2.textContent,10); const ss=parseInt(s1.textContent+s2.textContent,10); durationMs=(mm*60+ss)*1000; alerted5=alerted1=ended=false; start(); });
+btnPause.addEventListener('click', pause);
+btnReset.addEventListener('click', reset);
+btnFS.addEventListener('click', ()=>{ if(!document.fullscreenElement) document.documentElement.requestFullscreen().catch(()=>{}); else document.exitFullscreen().catch(()=>{}) });
+btnBlack.addEventListener('click', ()=> blackout.classList.toggle('show'));
 btnTest5.addEventListener('click', ()=>{ loadAudio(); snd5&&snd5.play().catch(()=>{}) });
 btnTest1.addEventListener('click', ()=>{ loadAudio(); snd1&&snd1.play().catch(()=>{}) });
 btnTestEnd.addEventListener('click', ()=>{ loadAudio(); sndEnd&&sndEnd.play().catch(()=>{}) });
@@ -487,10 +504,8 @@ bindPicker(pickSepColor, inSepColor, ()=>{ document.documentElement.style.setPro
 bindPicker(pickNeonColor, inNeonColor, ()=>{ document.documentElement.style.setProperty('--neon-color', inNeonColor.value); });
 bindPicker(pickOutlineColor, inOutlineColor, ()=>{ document.documentElement.style.setProperty('--outline-color', inOutlineColor.value); });
 
-/* ====== POZADINSKA SLIKA – LOGIKA ====== */
-function applyBgImageFromUrl(url){
-  if(url){ bgImg.src = url; }
-}
+/* ====== POZADINSKA SLIKA ====== */
+function applyBgImageFromUrl(url){ if(url){ bgImg.src = url; } }
 function handleFileUpload(file){
   if(!file) return;
   const reader = new FileReader();
@@ -508,25 +523,44 @@ function applyBgFilters(){
 }
 [inBgOpacity,inBgBlur,inBgBright,inBgSat,inBgScale].forEach(el=>el.addEventListener('input', applyBgFilters));
 
-/* ====== TASTATURA (blokirano kad je panel/modaI) ====== */
+/* ====== TASTATURA ====== */
+/* Kad je modal otvoren – prepuštamo njegove tipke */
 function isPanelOpen(){ return panel.classList.contains('open'); }
 function isModalOpen(){ return pwdModal.classList.contains('show'); }
 function toggleRun(){ running?pause():start(); }
+
 window.addEventListener('keydown', (e)=>{
-  if(isPanelOpen() || isModalOpen() || panel.contains(document.activeElement)){ return; }
-  const k=e.key.toLowerCase();
-  if([' ','enter','arrowright','pagedown'].includes(k) || e.code==='Space'){ e.preventDefault(); toggleRun(); return; }
-  if(['arrowleft','pageup','r'].includes(k)){ e.preventDefault(); reset(); return; }
-  if(k==='f'){ e.preventDefault(); $('btnFS').click(); return; }
-  if(k==='h'){ e.preventDefault(); togglePanel(); return; }
-  if(k==='b' || k==='.'){ e.preventDefault(); blackout.classList.toggle('show'); return; }
+  const k = e.key.toLowerCase();
+
+  // Modal: dozvoli njegove vlastite handler-e (Enter/Esc)
+  if (isModalOpen()) return;
+
+  // Ako je panel otvoren: dozvoli samo ESC da ga zatvori
+  if (isPanelOpen()){
+    if (k === 'escape'){ e.preventDefault(); togglePanel(false); }
+    return;
+  }
+
+  // Normalne prečice kada je panel zatvoren
+  if ([' ','enter','arrowright','pagedown'].includes(k) || e.code==='Space'){ e.preventDefault(); toggleRun(); return; }
+  if (['arrowleft','pageup','r'].includes(k)){ e.preventDefault(); reset(); return; }
+  if (k==='f'){ e.preventDefault(); btnFS.click(); return; }
+  if (k==='h'){ e.preventDefault(); togglePanel(); return; }
+  if (k==='b' || k==='.'){ e.preventDefault(); blackout.classList.toggle('show'); return; }
 });
 
 /* ====== AUTO-HIDE TOGGLE ====== */
 let hideTimer=null;
 function scheduleHide(){
-  if(inAutoHide.value==='off'){ toggleBtn.classList.remove('hidden'); return; }
-  if(!document.fullscreenElement){ toggleBtn.classList.remove('hidden'); return; }
+  // Dok je panel otvoren – toggle uvijek vidljiv
+  if (isPanelOpen()){
+    toggleBtn.classList.remove('hidden');
+    return;
+  }
+  if(inAutoHide.value==='off' || !document.fullscreenElement){
+    toggleBtn.classList.remove('hidden');
+    return;
+  }
   toggleBtn.classList.remove('hidden');
   clearTimeout(hideTimer);
   hideTimer=setTimeout(()=>toggleBtn.classList.add('hidden'), 2000);
@@ -541,7 +575,8 @@ function saveSettings(){
     theme:inTheme.value, size:inSize.value, stretch:inStretch.value, sep:inSep.value, bg:inBg.value,
     c1:inCol1.value, c2:inCol2.value, dc:inDigitColor.value, tc:inTitleColor.value,
     sepC:inSepColor.value, neonC:inNeonColor.value, outC:inOutlineColor.value,
-    blink:inBlink.value, ah:inAutoHide.value, b5:inBeep5.value, b1:inBeep1.value, bend:inEnd.value, vol:inVol.value,
+    blink:inBlink.value, ah:inAutoHide.value,
+    b5:inBeep5.value, b1:inBeep1.value, bend:inEnd.value, vol:inVol.value,
     bgUrl:inBgUrl.value, bgOp:inBgOpacity.value, bgBlur:inBgBlur.value, bgBr:inBgBright.value, bgSat:inBgSat.value, bgSc:inBgScale.value
   };
   localStorage.setItem('timerSettings', JSON.stringify(data));
@@ -554,17 +589,22 @@ function loadSettings(){
     inTop.value=s.top||'on'; inMin.value=s.m??10; inSec.value=s.s??0;
     inTheme.value=s.theme||'elegant'; inSize.value=s.size||0; inStretch.value=s.stretch||'1.22';
     inSep.value=s.sep||':';
+
     inBg.value=s.bg||'#121216'; pickBg.value=inBg.value;
     inCol1.value=s.c1||'#e2e2e7'; pickCol1.value=inCol1.value;
     inCol2.value=s.c2||'#e2e2e7'; pickCol2.value=inCol2.value;
     inDigitColor.value=s.dc||'#e2e2e7'; pickDigitColor.value=inDigitColor.value;
     inTitleColor.value=s.tc||'#e2e2e7'; pickTitleColor.value=inTitleColor.value;
+
     inSepColor.value=s.sepC||'#98a1ad'; pickSepColor.value=inSepColor.value;
     inNeonColor.value=s.neonC||'#7dd3fc'; pickNeonColor.value=inNeonColor.value;
     inOutlineColor.value=s.outC||'#ffffff'; pickOutlineColor.value=inOutlineColor.value;
+
     inBlink.value=s.blink||'on'; inAutoHide.value=s.ah||'on';
+
     inBeep5.value=s.b5||'5min.mp3'; inBeep1.value=s.b1||'1min.mp3'; inEnd.value=s.bend||'kraj.mp3';
     inVol.value=s.vol||1;
+
     inBgUrl.value=s.bgUrl||''; if(inBgUrl.value) bgImg.src=inBgUrl.value;
     inBgOpacity.value=s.bgOp??'0.18'; inBgBlur.value=s.bgBlur??'0'; inBgBright.value=s.bgBr??'1'; inBgSat.value=s.bgSat??'1'; inBgScale.value=s.bgSc??'1';
     applyBgFilters();
@@ -581,8 +621,7 @@ function init(){
   if(!inEnd.value)  inEnd.value='kraj.mp3';
   loadAudio();
   scheduleHide();
-  // Ako želiš default sliku: odkomentiraj liniju ispod i ubaci background.jpg
-  // bgImg.src = 'background.jpg';
+  // bgImg.src = 'background.jpg'; // po želji default
 }
 init();
 </script>
