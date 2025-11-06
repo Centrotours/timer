@@ -3,23 +3,23 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<meta name="color-scheme" content="light light">
-<meta name="theme-color" content="#ffffff">
-<title>Event Timer – GitHub Pages Ready</title>
+<meta name="color-scheme" content="dark dark">
+<meta name="theme-color" content="#121216">
+<title>Event Timer – KONTROLNA PLOČA</title>
 <style>
   :root{
-    --bg:#ffffff;
+    --bg:#121216;
+    --prime-light:#e2e2e7;
+    --prime-dark:#98a1ad;
 
-    /* Elegant gradient (cifre) */
-    --digit1:#ff8ec0; --digit2:#ff5a9b;
+    /* Boje cifara (različite za stilove) */
+    --digit1:var(--prime-light);
+    --digit2:var(--prime-light);
+    --digit-color:var(--prime-light);     /* 7seg/Flip/Neon/Outline osnovna */
+    --title-color:var(--prime-light);
+    --sep-color:var(--prime-dark);        /* NOVO: boja separatora */
 
-    /* 7seg/Flip mono boja cifara */
-    --digit-color:#111111;
-
-    /* Boja naslova ispod loga */
-    --title-color:#111111;
-
-    /* Tipografija i raspored */
+    /* Dimenzije i tipografija */
     --digit-size: clamp(96px, 20vw, 340px);
     --digit-stretch: 1.22;
     --sep-gap: clamp(12px, 4vw, 42px);
@@ -28,15 +28,43 @@
     /* UI */
     --panel-bg:#0b1220f5;
     --panel-height: min(56vh, 560px);
+
+    /* Pozadinska slika – kontrole */
+    --bg-opacity: 0.18;       /* 0–1 */
+    --bg-blur: 0px;           /* px */
+    --bg-bright: 1;           /* 0–2 */
+    --bg-sat: 1;              /* 0–2 */
+    --bg-scale: 1;            /* 0.5–2 */
+
+    /* Neon / Outline specifično */
+    --neon-color:#7dd3fc;     /* plava */
+    --outline-color:#ffffff;  /* obris */
   }
+
   *{box-sizing:border-box}
   html,body{height:100%}
   body{
-    margin:0; font-family:var(--font); color:#000; background:var(--bg);
+    margin:0; font-family:var(--font); color:var(--prime-light); background:var(--bg);
     display:flex; flex-direction:column; align-items:center; justify-content:center; overflow:hidden;
   }
 
-  /* Gornja traka (logo + natpis), malo podignuta iznad brojača */
+  /* Pozadinska slika sloj (ispod svega) */
+  .bg{
+    position:fixed; inset:0; z-index:0; pointer-events:none;
+    display:block; overflow:hidden;
+  }
+  .bg img{
+    position:absolute; left:50%; top:50%;
+    transform:translate(-50%,-50%) scale(var(--bg-scale));
+    min-width:100%; min-height:100%;
+    filter: blur(var(--bg-blur)) brightness(var(--bg-bright)) saturate(var(--bg-sat));
+    opacity:var(--bg-opacity);
+    object-fit:cover;
+  }
+
+  /* Sadržaj je iznad background-a */
+  .content-root{ position:relative; z-index:1; width:100% }
+
   .top{
     display:flex; flex-direction:column; align-items:center; gap:.5rem; text-align:center;
     padding:1rem .8rem 0; margin-bottom: clamp(12px, 5vh, 64px);
@@ -47,12 +75,14 @@
     font-size: clamp(16px, 2.4vw, 32px); color:var(--title-color)
   }
 
-  /* Timer sloj */
   .timer{
     display:flex; align-items:end; justify-content:center; gap:var(--sep-gap);
     line-height:1; user-select:none; padding:.2rem 1rem 1.2rem;
   }
-  .sep{width:.6em; text-align:center; font-weight:900; font-size: calc(var(--digit-size)*0.9)}
+  .sep{
+    width:.6em; text-align:center; font-weight:900; font-size: calc(var(--digit-size)*0.9);
+    color:var(--sep-color);             /* NOVO: separator koristi var */
+  }
   .blink{animation:blink 1s steps(1,end) infinite}
   @keyframes blink{50%{opacity:.2}}
 
@@ -66,7 +96,6 @@
     background: linear-gradient(180deg, var(--digit1), var(--digit2));
     -webkit-background-clip:text; background-clip:text; color:transparent;
   }
-  .theme-elegant .sep{ color:#cc2b6f }
 
   /* ------- THEME: 7-SEG ------- */
   .theme-7seg .digit, .theme-7seg .sep{
@@ -81,7 +110,26 @@
   .theme-flip .flip{animation:flip .6s ease-in-out; transform-origin:center top}
   @keyframes flip{0%{transform:rotateX(0)}100%{transform:rotateX(-180deg)}}
 
-  /* Dugme za Kontrole (auto-hide u fullscreen-u) */
+  /* ------- THEME: OUTLINE (NOVO) ------- */
+  .theme-outline .digit, .theme-outline .sep{
+    font-variant-numeric:tabular-nums; font-weight:900; font-size:var(--digit-size);
+    letter-spacing:.02em; transform:scaleY(1.15);
+    color:transparent; -webkit-text-stroke: .06em var(--outline-color);
+    text-shadow:none;
+  }
+
+  /* ------- THEME: NEON (NOVO) ------- */
+  .theme-neon .digit, .theme-neon .sep{
+    font-variant-numeric:tabular-nums; font-weight:900; font-size:var(--digit-size);
+    letter-spacing:.02em; transform:scaleY(1.08);
+    color:var(--neon-color);
+    text-shadow:
+      0 0 6px color-mix(in srgb, var(--neon-color) 70%, transparent),
+      0 0 18px color-mix(in srgb, var(--neon-color) 60%, transparent),
+      0 0 32px color-mix(in srgb, var(--neon-color) 40%, transparent);
+  }
+
+  /* Toggle dugme */
   .toggle{
     position:fixed; left:50%; transform:translateX(-50%);
     bottom:max(16px, env(safe-area-inset-bottom)); z-index:30;
@@ -91,7 +139,7 @@
   }
   .toggle.hidden{opacity:0; pointer-events:none; transform:translate(-50%,8px)}
 
-  /* Panel – potpuno skriven dok je zatvoren (translateY) */
+  /* Panel */
   .panel{
     position:fixed; left:0; right:0; bottom:0; z-index:26;
     background:var(--panel-bg); color:#fff; backdrop-filter:blur(10px);
@@ -143,28 +191,33 @@
 </head>
 <body>
 
-  <!-- Logo + natpis (pomjereno više iznad timera) -->
-  <div class="top" id="topBar">
-    <img class="logo" src="logo.png" alt="Logo" onerror="this.style.display='none'"/>
-    <h1 class="title" id="titleText">WORKSHOP COUNTDOWN</h1>
+  <!-- POZADINSKA SLIKA -->
+  <div class="bg" aria-hidden="true"><img id="bgImg" alt=""></div>
+
+  <!-- Glavni sadržaj -->
+  <div class="content-root">
+    <div class="top" id="topBar">
+      <img class="logo" src="logo.png" alt="Logo" onerror="this.style.display='none'"/>
+      <h1 class="title" id="titleText">WORKSHOP COUNTDOWN</h1>
+    </div>
+
+    <div class="timer theme-elegant" id="timerBox" aria-live="polite">
+      <span class="digit" id="m1">1</span>
+      <span class="digit" id="m2">0</span>
+      <span class="sep" id="sep">:</span>
+      <span class="digit" id="s1">0</span>
+      <span class="digit" id="s2">0</span>
+    </div>
+
+    <button class="toggle hidden" id="toggleBtn" aria-expanded="false">▴ Kontrole</button>
   </div>
 
-  <!-- TIMER (sva 3 stila koriste isti markup; Flip ga animira) -->
-  <div class="timer theme-elegant" id="timerBox" aria-live="polite">
-    <span class="digit" id="m1">1</span>
-    <span class="digit" id="m2">0</span>
-    <span class="sep" id="sep">:</span>
-    <span class="digit" id="s1">0</span>
-    <span class="digit" id="s2">0</span>
-  </div>
-
-  <!-- Toggle (auto-hide u fullscreen-u) -->
-  <button class="toggle hidden" id="toggleBtn" aria-expanded="false">▴ Kontrole</button>
-
-  <!-- PANEL (skriven po defaultu, password-protected po sesiji) -->
+  <!-- KONTROLNA PLOČA -->
   <div class="panel" id="panel" aria-hidden="true">
     <div class="content">
       <div class="grid">
+
+        <!-- Naslov i preseti -->
         <div class="row">
           <div style="flex:1">
             <label>Naslov (ispod loga)</label>
@@ -182,6 +235,7 @@
           </div>
         </div>
 
+        <!-- Vrijeme i stilovi -->
         <div><label>Minute</label><input id="inMin" type="number" min="0" value="10"/></div>
         <div><label>Sekunde</label><input id="inSec" type="number" min="0" max="59" value="0"/></div>
         <div><label>Stil timera</label>
@@ -189,35 +243,81 @@
             <option value="elegant" selected>Elegant</option>
             <option value="7seg">Seven-Seg</option>
             <option value="flip">Flip (listanje)</option>
+            <option value="outline">Outline (obris)</option>
+            <option value="neon">Neon (glow)</option>
           </select>
         </div>
         <div><label>Veličina cifara (px, 0=auto)</label><input id="inSize" type="number" min="0" max="560" value="0"/></div>
         <div><label>Elongacija (Elegant)</label><input id="inStretch" type="range" min="1.0" max="1.6" step="0.01" value="1.22"/></div>
-        <div><label>Separator</label><input id="inSep" type="text" maxlength="2" value=":"/></div>
+        <div><label>Separator znak</label><input id="inSep" type="text" maxlength="2" value=":"/></div>
 
-        <div><label>Pozadina</label><input id="inBg" type="text" value="#ffffff"/></div>
-        <div><label>Pick pozadine</label><input id="pickBg" type="color" value="#ffffff"/></div>
+        <!-- Boje i separator -->
+        <div><label>Pozadina (hex ili naziv)</label><input id="inBg" type="text" value="#121216"/></div>
+        <div><label>Pick pozadine</label><input id="pickBg" type="color" value="#121216"/></div>
 
-        <div><label>Boja gore (Elegant)</label><input id="inCol1" type="text" value="#ff8ec0"/></div>
-        <div><label>Pick gore</label><input id="pickCol1" type="color" value="#ff8ec0"/></div>
+        <div><label>Boja gore (Elegant)</label><input id="inCol1" type="text" value="#e2e2e7"/></div>
+        <div><label>Pick gore</label><input id="pickCol1" type="color" value="#e2e2e7"/></div>
 
-        <div><label>Boja dolje (Elegant)</label><input id="inCol2" type="text" value="#ff5a9b"/></div>
-        <div><label>Pick dolje</label><input id="pickCol2" type="color" value="#ff5a9b"/></div>
+        <div><label>Boja dolje (Elegant)</label><input id="inCol2" type="text" value="#e2e2e7"/></div>
+        <div><label>Pick dolje</label><input id="pickCol2" type="color" value="#e2e2e7"/></div>
 
-        <div><label>Boja cifara (7seg/Flip)</label><input id="inDigitColor" type="text" value="#111111"/></div>
-        <div><label>Pick cifara</label><input id="pickDigitColor" type="color" value="#111111"/></div>
+        <div><label>Boja cifara (7seg/Flip/Neon/Outline)</label><input id="inDigitColor" type="text" value="#e2e2e7"/></div>
+        <div><label>Pick cifara</label><input id="pickDigitColor" type="color" value="#e2e2e7"/></div>
 
-        <div><label>Boja naslova</label><input id="inTitleColor" type="text" value="#111111"/></div>
-        <div><label>Pick naslova</label><input id="pickTitleColor" type="color" value="#111111"/></div>
+        <div><label>Boja naslova</label><input id="inTitleColor" type="text" value="#e2e2e7"/></div>
+        <div><label>Pick naslova</label><input id="pickTitleColor" type="color" value="#e2e2e7"/></div>
+
+        <div><label>Boja separatora (NOVO)</label><input id="inSepColor" type="text" value="#98a1ad"/></div>
+        <div><label>Pick separatora</label><input id="pickSepColor" type="color" value="#98a1ad"/></div>
+
+        <div><label>Neon boja (za Neon stil)</label><input id="inNeonColor" type="text" value="#7dd3fc"/></div>
+        <div><label>Pick Neon</label><input id="pickNeonColor" type="color" value="#7dd3fc"/></div>
+
+        <div><label>Outline boja (za Outline stil)</label><input id="inOutlineColor" type="text" value="#ffffff"/></div>
+        <div><label>Pick Outline</label><input id="pickOutlineColor" type="color" value="#ffffff"/></div>
 
         <div><label>Blink separator</label><select id="inBlink"><option value="on" selected>On</option><option value="off">Off</option></select></div>
         <div><label>Auto-hide Kontrole u fullscreen-u</label><select id="inAutoHide"><option value="on" selected>On</option><option value="off">Off</option></select></div>
 
+        <!-- Zvukovi -->
         <div><label>Zvuk – 5 min</label><input id="inBeep5" type="text" value="5min.mp3"/></div>
         <div><label>Zvuk – 1 min</label><input id="inBeep1" type="text" value="1min.mp3"/></div>
         <div><label>Zvuk – kraj</label><input id="inEnd" type="text" value="kraj.mp3"/></div>
         <div><label>Glasnoća</label><input id="inVol" type="range" min="0" max="1" step="0.01" value="1"/></div>
 
+        <!-- Pozadinska slika – alati -->
+        <div class="row">
+          <div style="min-width:240px;flex:1">
+            <label>Pozadinska slika – URL ili naziv fajla</label>
+            <input id="inBgUrl" type="text" placeholder="npr. background.jpg ili https://..."/>
+          </div>
+          <div>
+            <label>Upload (lokalno)</label>
+            <input id="pickBgFile" type="file" accept="image/*"/>
+          </div>
+          <div>
+            <label>Opacity</label>
+            <input id="inBgOpacity" type="range" min="0" max="1" step="0.01" value="0.18"/>
+          </div>
+          <div>
+            <label>Blur (px)</label>
+            <input id="inBgBlur" type="range" min="0" max="40" step="1" value="0"/>
+          </div>
+          <div>
+            <label>Bright</label>
+            <input id="inBgBright" type="range" min="0" max="2" step="0.01" value="1"/>
+          </div>
+          <div>
+            <label>Saturate</label>
+            <input id="inBgSat" type="range" min="0" max="2" step="0.01" value="1"/>
+          </div>
+          <div>
+            <label>Scale</label>
+            <input id="inBgScale" type="range" min="0.5" max="2" step="0.01" value="1"/>
+          </div>
+        </div>
+
+        <!-- Komande -->
         <div class="row">
           <button id="btnApply">Primijeni</button>
           <button id="btnStart">▶ Start</button>
@@ -238,8 +338,6 @@
     </div>
   </div>
 
-  <div class="blackout" id="blackout"></div>
-
   <!-- Password modal -->
   <div class="modal" id="pwdModal" role="dialog" aria-modal="true" aria-labelledby="pwtitle">
     <div class="box">
@@ -254,39 +352,44 @@
   </div>
 
 <script>
-/* ====================== KONFIG I ELEMENTI ====================== */
+/* ====== KONFIG ====== */
 const PANEL_PASSWORD = 'sifra123';
 const SESSION_KEY = 'panelAuthOk';
 
+/* ====== ELEMENTI ====== */
 const $=id=>document.getElementById(id);
+const bgImg=$('bgImg');
 const timerBox=$('timerBox'), sepEl=$('sep'), topBar=$('topBar');
 const m1=$('m1'), m2=$('m2'), s1=$('s1'), s2=$('s2');
 const panel=$('panel'), toggleBtn=$('toggleBtn'), blackout=$('blackout');
-
 const inTitle=$('inTitle'), titleText=$('titleText'), inTop=$('inTop');
 const inMin=$('inMin'), inSec=$('inSec'), inTheme=$('inTheme'), inSize=$('inSize'), inStretch=$('inStretch');
 const inSep=$('inSep'), inBg=$('inBg'), inCol1=$('inCol1'), inCol2=$('inCol2'), inDigitColor=$('inDigitColor');
 const pickBg=$('pickBg'), pickCol1=$('pickCol1'), pickCol2=$('pickCol2'), pickDigitColor=$('pickDigitColor');
 const inTitleColor=$('inTitleColor'), pickTitleColor=$('pickTitleColor');
+const inSepColor=$('inSepColor'), pickSepColor=$('pickSepColor');
+const inNeonColor=$('inNeonColor'), pickNeonColor=$('pickNeonColor');
+const inOutlineColor=$('inOutlineColor'), pickOutlineColor=$('pickOutlineColor');
 const inBlink=$('inBlink'), inAutoHide=$('inAutoHide');
 const inBeep5=$('inBeep5'), inBeep1=$('inBeep1'), inEnd=$('inEnd'), inVol=$('inVol');
 const btnApply=$('btnApply'), btnStart=$('btnStart'), btnPause=$('btnPause'), btnReset=$('btnReset'), btnFS=$('btnFS'), btnBlack=$('btnBlack');
 const btnTest5=$('btnTest5'), btnTest1=$('btnTest1'), btnTestEnd=$('btnTestEnd');
-
+const inBgUrl=$('inBgUrl'), pickBgFile=$('pickBgFile');
+const inBgOpacity=$('inBgOpacity'), inBgBlur=$('inBgBlur'), inBgBright=$('inBgBright'), inBgSat=$('inBgSat'), inBgScale=$('inBgScale');
 const pwdModal=$('pwdModal'), pwdInput=$('pwdInput'), pwdOk=$('pwdOk'), pwdCancel=$('pwdCancel'), pwdMsg=$('pwdMsg');
 
-/* ====================== STANJE ====================== */
+/* ====== STANJE ====== */
 let durationMs=(10*60)*1000, endAt=null, running=false, raf=null;
 let alerted5=false, alerted1=false, ended=false;
 let snd5=null, snd1=null, sndEnd=null;
-let wakeLock=null; // Wake Lock sprečava gašenje ekrana kad timer radi
+let wakeLock=null;
 
-/* ====================== AUDIO ====================== */
+/* ====== AUDIO ====== */
 function mkAudio(p){ if(!p) return null; const a=new Audio(p); a.preload='auto'; a.volume=parseFloat(inVol.value||1); return a; }
 function loadAudio(){ snd5=mkAudio(inBeep5.value.trim()); snd1=mkAudio(inBeep1.value.trim()); sndEnd=mkAudio(inEnd.value.trim()); }
 inVol.addEventListener('input', ()=>[snd5,snd1,sndEnd].forEach(a=>{ if(a) a.volume=parseFloat(inVol.value||1); }));
 
-/* ====================== CRTANJE ====================== */
+/* ====== CRTANJE ====== */
 function setDigits(mm, ss){
   const [a,b]=String(mm).padStart(2,'0'); const [c,d]=String(ss).padStart(2,'0');
   if(!timerBox.classList.contains('theme-flip')){ m1.textContent=a; m2.textContent=b; s1.textContent=c; s2.textContent=d; return; }
@@ -295,10 +398,11 @@ function setDigits(mm, ss){
 function paint(ms){ if(ms<0) ms=0; const t=Math.floor(ms/1000); setDigits(Math.floor(t/60), t%60); }
 function applyFlip(el,next){ if(el.textContent===next) return; el.innerHTML=''; const wrap=document.createElement('span'); wrap.className='digit-wrap'; const card=document.createElement('span'); card.className='card flip'; card.textContent=next; wrap.appendChild(card); el.appendChild(wrap); }
 
-/* ====================== TIMER LOGIKA ====================== */
-async function requestWakeLock(){ try{ if('wakeLock' in navigator){ wakeLock = await navigator.wakeLock.request('screen'); wakeLock.addEventListener?.('release',()=>{ /* noop */ }); } }catch{} }
+/* ====== WAKE LOCK ====== */
+async function requestWakeLock(){ try{ if('wakeLock' in navigator){ wakeLock = await navigator.wakeLock.request('screen'); } }catch{} }
 function releaseWakeLock(){ try{ wakeLock && wakeLock.release && wakeLock.release(); wakeLock=null; }catch{} }
 
+/* ====== TIMER ====== */
 function start(){ if(running) return; endAt=performance.now()+durationMs; running=true; requestWakeLock(); loop(); }
 function pause(){ if(!running) return; running=false; cancelAnimationFrame(raf); durationMs=Math.max(0, endAt-performance.now()); releaseWakeLock(); }
 function reset(){ running=false; cancelAnimationFrame(raf); alerted5=alerted1=ended=false; durationMs=(+inMin.value*60 + +inSec.value)*1000; paint(durationMs); releaseWakeLock(); }
@@ -313,35 +417,39 @@ function loop(){
   raf=requestAnimationFrame(loop);
 }
 
-/* ====================== TEMA / PRIMJENA ====================== */
+/* ====== PRIMJENA STILA ====== */
 function applyTheme(){
-  timerBox.classList.remove('theme-elegant','theme-7seg','theme-flip');
+  timerBox.classList.remove('theme-elegant','theme-7seg','theme-flip','theme-outline','theme-neon');
   timerBox.classList.add('theme-'+inTheme.value);
+
   document.documentElement.style.setProperty('--digit-size', (+inSize.value>0? inSize.value+'px':'clamp(96px, 20vw, 340px)'));
   document.documentElement.style.setProperty('--digit-stretch', inStretch.value);
-  document.documentElement.style.setProperty('--bg', inBg.value||'#ffffff');
-  document.documentElement.style.setProperty('--digit1', inCol1.value||'#ff8ec0');
-  document.documentElement.style.setProperty('--digit2', inCol2.value||'#ff5a9b');
-  document.documentElement.style.setProperty('--digit-color', inDigitColor.value||'#111111');
-  document.documentElement.style.setProperty('--title-color', inTitleColor.value||'#111111');
-  const s=(inSep.value||':').slice(0,2); sepEl.textContent=s; sepEl.classList.toggle('blink', inBlink.value==='on');
+  document.documentElement.style.setProperty('--bg', inBg.value||'#121216');
+
+  document.documentElement.style.setProperty('--digit1', inCol1.value||'#e2e2e7');
+  document.documentElement.style.setProperty('--digit2', inCol2.value||'#e2e2e7');
+  document.documentElement.style.setProperty('--digit-color', inDigitColor.value||'#e2e2e7');
+  document.documentElement.style.setProperty('--title-color', inTitleColor.value||'#e2e2e7');
+  document.documentElement.style.setProperty('--sep-color', inSepColor.value||'#98a1ad');
+  document.documentElement.style.setProperty('--neon-color', inNeonColor.value||'#7dd3fc');
+  document.documentElement.style.setProperty('--outline-color', inOutlineColor.value||'#ffffff');
+
+  const s=(inSep.value||':').slice(0,2);
+  sepEl.textContent=s;
+  sepEl.classList.toggle('blink', inBlink.value==='on');
+
   topBar.style.display = (inTop.value==='off') ? 'none' : 'flex';
+
   if(inTheme.value==='flip'){ setDigits(parseInt(m1.textContent+m2.textContent,10), parseInt(s1.textContent+s2.textContent,10)); }
 }
 
-/* ====================== PANEL & AUTH ====================== */
+/* ====== PANEL + AUTENTIFIKACIJA ====== */
 function hasAuth(){ return sessionStorage.getItem(SESSION_KEY)==='1'; }
-function openPwdModal(){
-  pwdMsg.style.display='none';
-  pwdInput.value=''; pwdModal.classList.add('show'); pwdInput.focus();
-}
-function closePwdModal(){ pwdModal.classList.remove('show'); }
-$('pwdOk').addEventListener('click', ()=>{
-  if(pwdInput.value==='sifra123'){ sessionStorage.setItem(SESSION_KEY,'1'); closePwdModal(); togglePanel(true); }
-  else{ pwdMsg.style.display='block'; pwdInput.focus(); }
-});
+function openPwdModal(){ $('pwdMsg').style.display='none'; $('pwdInput').value=''; $('pwdModal').classList.add('show'); $('pwdInput').focus(); }
+function closePwdModal(){ $('pwdModal').classList.remove('show'); }
+$('pwdOk').addEventListener('click', ()=>{ if($('pwdInput').value===PANEL_PASSWORD){ sessionStorage.setItem(SESSION_KEY,'1'); closePwdModal(); togglePanel(true); } else { $('pwdMsg').style.display='block'; $('pwdInput').focus(); }});
 $('pwdCancel').addEventListener('click', ()=> closePwdModal());
-pwdInput.addEventListener('keydown', (e)=>{ if(e.key==='Enter') $('pwdOk').click(); if(e.key==='Escape') closePwdModal(); });
+$('pwdInput').addEventListener('keydown', (e)=>{ if(e.key==='Enter') $('pwdOk').click(); if(e.key==='Escape') closePwdModal(); });
 
 function togglePanel(forceOpen){
   const targetOpen = forceOpen!==undefined ? !!forceOpen : !panel.classList.contains('open');
@@ -353,12 +461,9 @@ function togglePanel(forceOpen){
 }
 toggleBtn.addEventListener('click', ()=> togglePanel());
 
-/* ====================== PRESETS / PRIMJENA ====================== */
+/* ====== PRESETS / DUGMAD ====== */
 document.querySelectorAll('[data-preset]').forEach(b=>b.addEventListener('click',()=>{ inMin.value=parseInt(b.dataset.preset,10)||0; inSec.value=0; reset(); }));
-$('btnApply').addEventListener('click', ()=>{
-  if(inTitle.value.trim()) titleText.textContent=inTitle.value.trim();
-  applyTheme(); reset(); loadAudio(); saveSettings();
-});
+$('btnApply').addEventListener('click', ()=>{ if(inTitle.value.trim()) titleText.textContent=inTitle.value.trim(); applyTheme(); reset(); loadAudio(); saveSettings(); });
 $('btnStart').addEventListener('click', ()=>{ const mm=parseInt(m1.textContent+m2.textContent,10); const ss=parseInt(s1.textContent+s2.textContent,10); durationMs=(mm*60+ss)*1000; alerted5=alerted1=ended=false; start(); });
 $('btnPause').addEventListener('click', pause);
 $('btnReset').addEventListener('click', reset);
@@ -368,7 +473,7 @@ btnTest5.addEventListener('click', ()=>{ loadAudio(); snd5&&snd5.play().catch(()
 btnTest1.addEventListener('click', ()=>{ loadAudio(); snd1&&snd1.play().catch(()=>{}) });
 btnTestEnd.addEventListener('click', ()=>{ loadAudio(); sndEnd&&sndEnd.play().catch(()=>{}) });
 
-/* ====================== COLOR PICKERS (sync) ====================== */
+/* ====== COLOR PICKERI (sync) ====== */
 function bindPicker(picker, input, applyCb){
   picker.addEventListener('input', ()=>{ input.value = picker.value; applyCb&&applyCb(); });
   input.addEventListener('change', ()=>{ picker.value = input.value; applyCb&&applyCb(); });
@@ -378,10 +483,32 @@ bindPicker(pickCol1, inCol1, ()=>applyTheme());
 bindPicker(pickCol2, inCol2, ()=>applyTheme());
 bindPicker(pickDigitColor, inDigitColor, ()=>applyTheme());
 bindPicker(pickTitleColor, inTitleColor, ()=>{ document.documentElement.style.setProperty('--title-color', inTitleColor.value); });
+bindPicker(pickSepColor, inSepColor, ()=>{ document.documentElement.style.setProperty('--sep-color', inSepColor.value); });
+bindPicker(pickNeonColor, inNeonColor, ()=>{ document.documentElement.style.setProperty('--neon-color', inNeonColor.value); });
+bindPicker(pickOutlineColor, inOutlineColor, ()=>{ document.documentElement.style.setProperty('--outline-color', inOutlineColor.value); });
 
-/* ====================== TASTATURA / DALJINSKI ======================
-   Tipke NE utiču na timer dok je panel ili modal otvoren / fokus unutar panela.
-*/
+/* ====== POZADINSKA SLIKA – LOGIKA ====== */
+function applyBgImageFromUrl(url){
+  if(url){ bgImg.src = url; }
+}
+function handleFileUpload(file){
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = e => { bgImg.src = e.target.result; };
+  reader.readAsDataURL(file);
+}
+inBgUrl.addEventListener('change', ()=>applyBgImageFromUrl(inBgUrl.value.trim()));
+pickBgFile.addEventListener('change', ()=>handleFileUpload(pickBgFile.files?.[0]));
+function applyBgFilters(){
+  document.documentElement.style.setProperty('--bg-opacity', inBgOpacity.value);
+  document.documentElement.style.setProperty('--bg-blur', inBgBlur.value+'px');
+  document.documentElement.style.setProperty('--bg-bright', inBgBright.value);
+  document.documentElement.style.setProperty('--bg-sat', inBgSat.value);
+  document.documentElement.style.setProperty('--bg-scale', inBgScale.value);
+}
+[inBgOpacity,inBgBlur,inBgBright,inBgSat,inBgScale].forEach(el=>el.addEventListener('input', applyBgFilters));
+
+/* ====== TASTATURA (blokirano kad je panel/modaI) ====== */
 function isPanelOpen(){ return panel.classList.contains('open'); }
 function isModalOpen(){ return pwdModal.classList.contains('show'); }
 function toggleRun(){ running?pause():start(); }
@@ -395,7 +522,7 @@ window.addEventListener('keydown', (e)=>{
   if(k==='b' || k==='.'){ e.preventDefault(); blackout.classList.toggle('show'); return; }
 });
 
-/* ====================== AUTO-HIDE TOGGLE U FULLSCREEN-U ====================== */
+/* ====== AUTO-HIDE TOGGLE ====== */
 let hideTimer=null;
 function scheduleHide(){
   if(inAutoHide.value==='off'){ toggleBtn.classList.remove('hidden'); return; }
@@ -407,13 +534,15 @@ function scheduleHide(){
 document.addEventListener('mousemove', scheduleHide);
 document.addEventListener('fullscreenchange', scheduleHide);
 
-/* ====================== PERSIST ====================== */
+/* ====== PERSIST ====== */
 function saveSettings(){
   const data={
     t:titleText.textContent, top:inTop.value, m:inMin.value, s:inSec.value,
     theme:inTheme.value, size:inSize.value, stretch:inStretch.value, sep:inSep.value, bg:inBg.value,
     c1:inCol1.value, c2:inCol2.value, dc:inDigitColor.value, tc:inTitleColor.value,
-    blink:inBlink.value, ah:inAutoHide.value, b5:inBeep5.value, b1:inBeep1.value, bend:inEnd.value, vol:inVol.value
+    sepC:inSepColor.value, neonC:inNeonColor.value, outC:inOutlineColor.value,
+    blink:inBlink.value, ah:inAutoHide.value, b5:inBeep5.value, b1:inBeep1.value, bend:inEnd.value, vol:inVol.value,
+    bgUrl:inBgUrl.value, bgOp:inBgOpacity.value, bgBlur:inBgBlur.value, bgBr:inBgBright.value, bgSat:inBgSat.value, bgSc:inBgScale.value
   };
   localStorage.setItem('timerSettings', JSON.stringify(data));
 }
@@ -424,32 +553,36 @@ function loadSettings(){
     inTitle.value=s.t||''; titleText.textContent=s.t||titleText.textContent;
     inTop.value=s.top||'on'; inMin.value=s.m??10; inSec.value=s.s??0;
     inTheme.value=s.theme||'elegant'; inSize.value=s.size||0; inStretch.value=s.stretch||'1.22';
-    inSep.value=s.sep||':'; inBg.value=s.bg||'#ffffff'; pickBg.value=inBg.value;
-    inCol1.value=s.c1||'#ff8ec0'; pickCol1.value=inCol1.value;
-    inCol2.value=s.c2||'#ff5a9b'; pickCol2.value=inCol2.value;
-    inDigitColor.value=s.dc||'#111111'; pickDigitColor.value=inDigitColor.value;
-    inTitleColor.value=s.tc||'#111111'; pickTitleColor.value=inTitleColor.value;
+    inSep.value=s.sep||':';
+    inBg.value=s.bg||'#121216'; pickBg.value=inBg.value;
+    inCol1.value=s.c1||'#e2e2e7'; pickCol1.value=inCol1.value;
+    inCol2.value=s.c2||'#e2e2e7'; pickCol2.value=inCol2.value;
+    inDigitColor.value=s.dc||'#e2e2e7'; pickDigitColor.value=inDigitColor.value;
+    inTitleColor.value=s.tc||'#e2e2e7'; pickTitleColor.value=inTitleColor.value;
+    inSepColor.value=s.sepC||'#98a1ad'; pickSepColor.value=inSepColor.value;
+    inNeonColor.value=s.neonC||'#7dd3fc'; pickNeonColor.value=inNeonColor.value;
+    inOutlineColor.value=s.outC||'#ffffff'; pickOutlineColor.value=inOutlineColor.value;
     inBlink.value=s.blink||'on'; inAutoHide.value=s.ah||'on';
     inBeep5.value=s.b5||'5min.mp3'; inBeep1.value=s.b1||'1min.mp3'; inEnd.value=s.bend||'kraj.mp3';
     inVol.value=s.vol||1;
+    inBgUrl.value=s.bgUrl||''; if(inBgUrl.value) bgImg.src=inBgUrl.value;
+    inBgOpacity.value=s.bgOp??'0.18'; inBgBlur.value=s.bgBlur??'0'; inBgBright.value=s.bgBr??'1'; inBgSat.value=s.bgSat??'1'; inBgScale.value=s.bgSc??'1';
+    applyBgFilters();
   }catch{}
 }
 
-/* ====================== INIT ====================== */
+/* ====== INIT ====== */
 function init(){
-  // sve zatvoreno i čisto na startu
   panel.classList.remove('open'); panel.setAttribute('aria-hidden','true');
   toggleBtn.classList.add('hidden');
   loadSettings(); applyTheme(); paint(durationMs);
-
-  // default zvukovi (ako su fajlovi prisutni)
   if(!inBeep5.value) inBeep5.value='5min.mp3';
   if(!inBeep1.value) inBeep1.value='1min.mp3';
   if(!inEnd.value)  inEnd.value='kraj.mp3';
   loadAudio();
-
-  // auto-hide dugmeta u fullscreen-u
   scheduleHide();
+  // Ako želiš default sliku: odkomentiraj liniju ispod i ubaci background.jpg
+  // bgImg.src = 'background.jpg';
 }
 init();
 </script>
